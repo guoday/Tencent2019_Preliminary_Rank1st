@@ -25,6 +25,7 @@ mkdir data
 cd data
 wget https://www.dropbox.com/s/x2scxmk8q0p0xae/algo.qq.com_641013010_testa.zip
 unzip algo.qq.com_641013010_testa.zip 
+cd testA
 unzip imps_log.zip 
 unzip user.zip
 cd ..
