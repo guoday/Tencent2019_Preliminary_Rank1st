@@ -28,7 +28,7 @@ unzip algo.qq.com_641013010_testa.zip
 cd testA
 unzip imps_log.zip 
 unzip user.zip
-cd ..
+cd ../..
 ```
 
 **注：需要VPN访问国外的网络**
