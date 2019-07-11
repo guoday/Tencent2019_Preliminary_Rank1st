@@ -33,7 +33,7 @@ class Model(BaseModel):
         emb_inp_v2=[]
         dnn_input=[]
         
-        #CIN: 结合多值特征和交叉特征输入CIN中 
+        
         if hparams.dense_features is not None:
             self.dense_features=tf.placeholder(shape=(None,len(hparams.dense_features)), dtype=tf.float32)
             
@@ -44,7 +44,8 @@ class Model(BaseModel):
             
         if hparams.multi_features is not None:
             hparams.feature_nums+=len(hparams.multi_features)
-        
+            
+        #CIN: 结合多值特征和交叉特征输入CIN中 
         if hparams.cross_features is not None:    
             self.cross_features=tf.placeholder(shape=(None,len(hparams.cross_features)), dtype=tf.int32)
             self.cross_emb_v2=tf.get_variable(shape=[hparams.cross_hash_num,hparams.k],initializer=self.initializer,name='emb_v2_cross')
@@ -62,8 +63,9 @@ class Model(BaseModel):
             
         if len(emb_inp_v2)!=0:
             emb_inp_v2=tf.concat(emb_inp_v2,1)
-            exfm_logits=self._build_extreme_FM(hparams, emb_inp_v2, res=False, direct=False, bias=False, reduce_D=False, f_dim=2)[:,0]
+            result=self._build_extreme_FM(hparams, emb_inp_v2, res=False, direct=False, bias=False, reduce_D=False, f_dim=2)
             dnn_input.append(tf.reshape(emb_inp_v2,[-1,hparams.feature_nums*hparams.k]))
+            dnn_input.append(result)
         
         #单值特征，直接embedding
         if hparams.single_features is not None:
@@ -103,8 +105,7 @@ class Model(BaseModel):
         glorot = np.sqrt(2.0 / (hparams.hidden_size[-1] + 1))
         W = tf.Variable(np.random.normal(loc=0, scale=glorot, size=(hparams.hidden_size[-1], 1)), dtype=np.float32)     
         logit=tf.tensordot(dnn_input,W,[[-1],[0]])
-        dnn_logits=logit[:,0]
-        self.val=exfm_logits+dnn_logits
+        self.val=logit[:,0]
 
         self.score=tf.abs(self.val-self.label)
         self.loss=tf.reduce_mean(self.score)
@@ -180,42 +181,5 @@ class Model(BaseModel):
             result = tf.concat(final_result, axis=1)
             
             result = tf.reduce_sum(result, -1)
-  
-            if res:
-                w_nn_output1 = tf.get_variable(name='w_nn_output1',
-                                               shape=[final_len, 128],
-                                               dtype=tf.float32)
-                b_nn_output1 = tf.get_variable(name='b_nn_output1',
-                                               shape=[128],
-                                               dtype=tf.float32,
-                                               initializer=tf.zeros_initializer())
-                self.layer_params.append(w_nn_output1)
-                self.layer_params.append(b_nn_output1)
-                exFM_out0 = tf.nn.xw_plus_b(result, w_nn_output1, b_nn_output1)
-                exFM_out1 = self._active_layer(logit=exFM_out0,
-                                               scope=scope,
-                                               activation="relu",
-                                               layer_idx=0)
-                w_nn_output2 = tf.get_variable(name='w_nn_output2',
-                                               shape=[128 + final_len, 1],
-                                               dtype=tf.float32)
-                b_nn_output2 = tf.get_variable(name='b_nn_output2',
-                                               shape=[1],
-                                               dtype=tf.float32,
-                                               initializer=tf.zeros_initializer())
-                self.layer_params.append(w_nn_output2)
-                self.layer_params.append(b_nn_output2)
-                exFM_in = tf.concat([exFM_out1, result], axis=1, name="user_emb")
-                exFM_out = tf.nn.xw_plus_b(exFM_in, w_nn_output2, b_nn_output2)
 
-            else:
-                w_nn_output = tf.get_variable(name='w_nn_output',
-                                              shape=[final_len, 1],
-                                              dtype=tf.float32)
-                b_nn_output = tf.get_variable(name='b_nn_output',
-                                              shape=[1],
-                                              dtype=tf.float32,
-                                              initializer=tf.zeros_initializer())
-                exFM_out = tf.nn.xw_plus_b(result, w_nn_output, b_nn_output)
-
-            return exFM_out
+            return result
