@@ -21,8 +21,7 @@
 - Linux Ubuntu 16.04, 128G内存(64G应该足够)，一张显卡 
 
 ### 4.数据下载
-
-从该 [网页](https://amritasaha1812.github.io/CSQA/download/)下载数据，并解压到data目录，或:
+这个之后会换成下载方式，目前无法使用
 
 ```shell
 mkdir data 
