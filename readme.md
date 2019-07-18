@@ -21,16 +21,14 @@
 - Linux Ubuntu 16.04, 128G内存(64G应该足够)，一张显卡 
 
 ### 4.数据下载
-这个之后会换成其他下载方式，目前无法使用
-
 ```shell
 mkdir data 
 cd data
+#Download data from https://pan.baidu.com/s/1ASQMms_u70psRgW_KEyT2Q 
+#Password: burw
 unzip algo.qq.com_641013010_testa.zip imps_log.zip user.zip
 cd ..
 ```
-
-**注：需要VPN访问国外的网络**
 
 ### 5.数据预处理
 
