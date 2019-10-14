@@ -260,7 +260,7 @@ class BaseModel(object):
         preds=self.infer(dev)
         dev['predict_imp']=preds
         
-        dev['rank']=dev[['aid', 'bid']].groupby('aid')['bid'].apply(lambda row: pd.Series(dict(zip(row.index, row.rank()))))-1
+        dev['rank']=dev[['aid', 'bid']].groupby('aid')['bid'].transform(lambda row: pd.Series(dict(zip(row.index, row.rank()))))-1
         dev['predict_imp']=dev['predict_imp'].apply(lambda x:np.exp(x)-1)
         dev['predict_imp']=dev['predict_imp'].apply(round)
         dev['predict_imp']=dev['predict_imp'].apply(lambda x: 0 if x<0  else x)
