@@ -51,6 +51,11 @@ def parse_rawdata():
     df.to_pickle('data/testA/test_sample.pkl')
     del df
     gc.collect()
+    ##############################################################################
+    #广告操作数据
+    df=pd.read_csv('data/testA/ad_operation.dat', sep='\t',names=['aid','request_timestamp','type','op_type','value']).sort_values(by='request_timestamp')
+    df['request_time'] = df.apply(lambda x:(pd.to_datetime('20190228000000') if x['request_timestamp'] == 20190230000000  else (pd.to_datetime(x['request_timestamp']) if x['request_timestamp'] == 0 else pd.to_datetime(str(x['request_timestamp'])))), axis=1 )
+    df.to_pickle('data/testA/ad_operation.pkl')
 
 def construct_log():
     #构造曝光日志，分别有验证集的log和测试集的log
@@ -226,7 +231,7 @@ def construct_dev_data(dev_df):
 
 
 print("parsing raw data ....")
-parse_rawdata() 
+parse_rawdata()
 
 print("construct log ....")
 train_df,dev_df=construct_log()

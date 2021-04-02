@@ -190,6 +190,7 @@ class BaseModel(object):
                     T=(time.time()-start_time)
                     if dev is not None:
                         self.eval(T,dev,hparams,sess)
+
         if dev is not None:
             return self.eval(T,dev,hparams,sess)
         else:
@@ -197,8 +198,13 @@ class BaseModel(object):
     
     def reload(self):
         hparams=self.hparams
-        self.saver.restore(self.sess,'model_tmp/model'+hparams.model_name)
-        
+        self.saver.restore(self.sess,'model_tmp/model/'+hparams.model_name)
+
+    def save(self):
+        hparams = self.hparams
+        self.saver.save(self.sess, 'model_tmp/model/' + hparams.model_name)
+
+
     def infer(self,dev):
         hparams=self.hparams
         sess=self.sess   
